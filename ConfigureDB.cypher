@@ -1,7 +1,7 @@
 USING PERIODIC COMMIT
 LOAD CSV WITH HEADERS FROM "file:///NodesBerkStan.csv" AS line
 CREATE (:Site {:line.nodeId});
-CREATE INDEX ON :Site(siteId);
+CREATE INDEX ON :Site(nodeId);
 
 
 USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM "file:///web-BerkStan.csv" AS line FIELDTERMINATOR '\t'

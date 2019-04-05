@@ -16,7 +16,7 @@ Paso 4. Ejecutar los comandos que se encuentra en ConfigureDB.cypher para crear 
 
 Paso 5. Utilizar el programa pipeline.py que ejecutará los comandos presentado en el archivo P3queries.cypher
 
-  *Nota: Se necesita unas librerias para ejecutar el programa con python, se descargan con los siguientes comandos:
-    pip install neo4j
-    pip install neo4j-driver
+Nota: Se necesita unas librerias para ejecutar el programa con python, se descargan con los siguientes comandos:
+  pip install neo4j
+  pip install neo4j-driver
   

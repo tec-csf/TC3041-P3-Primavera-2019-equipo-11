@@ -1,54 +1,37 @@
-
-#from py2neo import authenticate, Graph
-
-# set up authentication parameters
-#authenticate("localhost:7474", "user", "pass")
-
-# connect to authenticated graph database
-#sgraph = Graph("http://localhost:7474/db/data/")
-
 from neo4j import GraphDatabase
 
 driver = GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "password"))
+#driver = GraphDatabase.driver("bolt://10.49.95.97:7687", auth=("neo4j", "password")) #para conectarse remotamente a una ip
 
-def add_friend(tx, name, friend_name):
-    tx.run("MERGE (a:Person {name: $name}) "
-           "MERGE (a)-[:KNOWS]->(friend:Person {name: $friend_name})",
-           name=name, friend_name=friend_name)
+q1 = "MATCH (n:Site)-[r:Links_To]->()" "RETURN DISTINCT n.siteID, count(r) ORDER BY count(r) desc LIMIT 5"
 
-def print_friends(tx, name):
-    for record in tx.run("MATCH (a:Person)-[:KNOWS]->(friend) WHERE a.name = $name "
-                         "RETURN friend.name ORDER BY friend.name", name=name):
-        print(record["friend.name"])
+q2 = "MATCH (n) WHERE NOT (n:Site)-[:Links_To]->() RETURN DISTINCT n.siteID ORDER BY n.siteID desc"
+
+q3 = "MATCH (n:Site { siteID: '1' }),(m:Site { siteID: '100' }), p = shortestPath((n)-[*]-(m)) RETURN p, length(p)"
 
 with driver.session() as session:
-    session.write_transaction(add_friend, "Arthur", "Guinevere")
-    session.write_transaction(add_friend, "Arthur", "Lancelot")
-    session.write_transaction(add_friend, "Arthur", "Merlin")
-    session.read_transaction(print_friends, "Arthur")
-
-
-#q = 'MATCH (u:User)-[r:likes]->(m:Beer) WHERE u.name="Marco" RETURN u, type(r), m'
-# "db" as defined above
-q= "MATCH (n:Person)" "RETURN n.name;"
-
-def test (tx, n):
-	tx.run("MATCH (n:Person)" "RETURN n.name;")
-	print("n.name") 
+	query1 = session.run(q1)
 
 with driver.session() as session:
-	session.read_transaction(test, "n")
-	nodes = session.run(q)
+    query2 = session.run(q2)
 
+with driver.session() as session:
+    query3 = session.run(q3)
 
+print("Query 1: Obtener los 5 sitios que se conectan a mas sitios.")
+for node in query1:
+    q1 = "Sitio: " + node["n.siteID"] + " Links Totales: " + str(node ["count(r)"])
+    print (q1)
+    
+print("\nQuery 2: Obtener los sitios que no conectan a ningun otro sitio.")
+print("Sitios que no conectan a otro sitio:")
+for node in query2:
+    q2 = "Sitio: " + node["n.siteID"]
+    print(q2)
 
-
-
-print("List:")
-
-for node in nodes:
-    #print(node)
-    print(node["n.name"])
-#results = driver.query(q, returns=(client.Node, str, client.Node))
-#for r in results:
-#    print("(%s)-[%s]->(%s)" % (r[0]["name"], r[1], r[2]["name"]))
+print("\nQuery 3: Obtiene el camino mas corto entre dos sitios y su longitud. Ejemplo: 1 y 100")
+print("Camino mas corto:")
+for node in query3:
+    q3 = node["p"]
+    print(q3)
+    print(" Longitud: " + str(node["length(p)"]))

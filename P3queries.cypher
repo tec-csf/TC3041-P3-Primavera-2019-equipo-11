@@ -8,4 +8,4 @@ MATCH (n) WHERE NOT (n:Site)-[:Links_To]->() RETURN DISTINCT n.siteID ORDER BY n
 
 # Obtiene el camino más corto entre dos sitios y su longitud. Ejemplo: 1 y 100
 
-MATCH (n:Site { siteID: '1' }), (m:Site { siteID: '100' }), p = shortestPath((n)-[*]-(m)) RETURN p, length(p
+MATCH (n:Site { siteID: '1' }), (m:Site { siteID: '100' }), p = shortestPath((n)-[*]-(m)) RETURN p, length(p)
